@@ -1,0 +1,206 @@
+
+
+DDoS Deflate
+https://github.com/jgmdev/ddos-deflate
+
+安装
+#安装sendmail
+yum install sendmail
+service sendmail start
+#安装iptables
+yum install iptables
+
+wget https://github.com/jgmdev/ddos-deflate/archive/master.zip -O ddos.zip
+unzip ddos.zip
+cd ddos-deflate-master
+chmod +x install.sh
+./install.sh
+
+
+#进入/etc/init.d/编辑/etc/init.d/iptables  145行下面插入 
+security)
+        $IPTABLES -t filter -P INPUT $policy \
+            && $IPTABLES -t filter -P OUTPUT $policy \
+            && $IPTABLES -t filter -P FORWARD $policy \
+            || let ret+=1
+        ;;
+
+#重启 iptables 
+service iptables restart
+#重启机器   
+reboot
+
+
+卸载
+cd ddos-deflate-master
+chmod 700 uninstall.sh
+./uninstall.sh
+
+DDoS Deflate 的使用
+
+安装程序会自动检测系统是否支持 init.d 脚本,当支持的话将安装文件和启动脚本的 DDoS apropiate 。在初始化的情况。 DDoS Deflate 开始作为一个守护进程，它监测间隔设置为5秒默认。
+
+你也可以手动配置 DDoS Deflate 的各项参数，配置文件如下：
+/etc/ddos/ignore.host.list
+
+在这个文件里可以添加主机列表为白名单，一般都是搜索引擎（当然你可以根据自己的情况来加入允许的主机到这个白名单），示例如下：
+googlebot.com 
+my-dynamic-ip.somehost.com
+baidu.com
+sogou.com
+so.com
+bing.com
+sm.cn
+
+/etc/ddos/ignore.ip.list
+还可以使用上面的文件来加入IP地址白名单，这个主要是比较适用 CDN 节点IP的加入。示例如下：
+12.43.63.13 
+129.134.131.2
+
+
+DDoS Deflate 的主配置文件内容
+vim /usr/local/ddos/ddos.conf
+
+##### Paths of the script and other files
+PROGDIR="/usr/local/ddos"
+PROG="/usr/local/ddos/ddos.sh" #要执行的DDoS脚本
+IGNORE_IP_LIST="/usr/local/ddos/ignore.ip.list"  #IP白名单 , 名单中的IP不受限制
+CRON="/etc/cron.d/ddos.cron" #定时执行程序
+APF="/etc/apf/apf"
+IPT="/sbin/iptables"
+##### frequency in minutes for running the script
+##### Caution: Every time this setting is changed, run the script with --cron
+##### option so that the new frequency takes effect
+FREQ=1 #检查时间间隔，默认1分钟
+##### How many connections define a bad IP? Indicate that below.
+NO_OF_CONNECTIONS=150 #最大连接数，超过这个数IP就会被屏蔽，一般默认即可
+##### APF_BAN=1 (Make sure your APF version is atleast 0.96)
+##### APF_BAN=0 (Uses iptables for banning ips instead of APF)
+APF_BAN=0 #使用APF还是iptables。推荐使用iptables，0表示使用iptables，1表示使用APF。
+##### KILL=0 (Bad IPs are'nt banned, good for interactive execution of script)
+##### KILL=1 (Recommended setting)
+KILL=1 #是否屏蔽IP，默认即可
+##### An email is sent to the following address when an IP is banned.
+##### Blank would suppress sending of mails
+EMAIL_TO="277023115@qq.com" #当IP被屏蔽时给指定邮箱发送邮件，把root换成自己的邮箱即可
+##### Number of seconds the banned ip should remain in blacklist.
+BAN_PERIOD=600 #禁用IP时间，默认600秒，可根据情况调整
+
+修改/usr/local/ddos/ddos.sh文件的第117行：
+netstat -ntu | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr > $BAD_IP_LIST
+修改为以下代码即可！
+netstat -ntu | awk '{print $5}' | cut -d: -f1 | sed -n '/[0-9]/p' | sort | uniq -c | sort -nr  > $BAD_IP_LIST
+
+
+在修改了上面的注配置文件后，记得要重启一下 DDoS Deflate 进程以便配置生效，命令如下：
+systemctl restart ddos
+or
+/etc/init.d/ddos restart
+or
+service ddos restart
+
+
+#停止firewall
+systemctl stop firewall.service
+#禁止firewall开机启动
+systemctl disable firewall.service
+#安装iptables
+yum install iptables-services
+
+#重启防火墙使配置文件生效
+systemctl restart iptables.service
+
+#设置iptables防火墙为开机启动项 
+systemctl enable iptables.service
+
+service iptables  start #启动服务
+service iptables  stop #停止服务
+service iptables  restart #重启服务
+
+
+关闭SELINUX
+vi /etc/selinux/config
+#注释以下配置
+SELINUX=enforcing
+SELINUXTYPE=targeted
+#增加以下配置 
+SELINUX=disabled 
+#使配置立即生效 
+setenforce 0
+
+
+iptables的默认配置文件路径：/etc/sysconfig/iptables
+用iptables命令添加规则后要使用service iptables save命令后才能永久保存
+systemctl restart iptables.service 或 service iptables restart重启iptables服务
+
+#编辑防火墙文件（建议都在配置文件配置，不要命令配置）
+vi /etc/sysconfig/iptables 
+#添加80和3306端口 等等（自己配置）
+-A INPUT -m state –state NEW -m tcp -p tcp –dport 80 -j ACCEPT #80端口开放
+-A INPUT -m state –state NEW -m tcp -p tcp –dport 3306 -j ACCEPT #3306端口开放
+
+-------------------------------------------------------------
+防范DDOS攻击脚本
+#防止SYN攻击 轻量级预防
+iptables -N syn-flood
+iptables -A INPUT -p tcp --syn -j syn-flood
+iptables -I syn-flood -p tcp -m limit --limit 3/s --limit-burst 6 -j RETURN
+iptables -A syn-flood -j REJECT
+#防止DOS太多连接进来,可以允许外网网卡每个IP最多15个初始连接,超过的丢弃
+iptables -A INPUT -i eth0 -p tcp --syn -m connlimit --connlimit-above 15 -j DROP
+iptables -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT
+#用Iptables抵御DDOS (参数与上相同)
+iptables -A INPUT  -p tcp --syn -m limit --limit 12/s --limit-burst 24 -j ACCEPT
+iptables -A FORWARD -p tcp --syn -m limit --limit 1/s -j ACCEPT
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+iptables防DDOS攻击脚本
+#!/bin/sh
+## define some vars 
+MAX_TOTAL_SYN_RECV="1000"
+MAX_PER_IP_SYN_RECV="20"
+MARK="SYN_RECV"
+PORT="80"
+LOGFILE="/var/log/netstat_$MARK-$PORT"
+LOGFILE_IP="/var/log/netstat_connect_ip.log"
+DROP_IP_LOG="/var/log/netstat_syn_drop_ip.log"
+## iptables default rules: accept normailly packages and drop baleful SYN* packages 
+iptables -F -t filter
+iptables -A INPUT -p TCP ! --syn -m state --state NEW -j DROP
+iptables -A INPUT -p ALL -m state --state INVALID -j DROP
+iptables -A INPUT -p ALL -m state --state ESTABLISHED,RELATED -j ACCEPT
+## initialize
+if [ -z $MARK ];then
+MARK="LISTEN"
+fi
+if [ -z $PORT ];then
+SPORT="tcp"
+else
+SPORT=":$PORT"
+fi
+######################## end
+## save the results of command netstat to specifal file
+netstat -atun|grep $MARK|grep $SPORT 2>/dev/null >$LOGFILE
+REPEAT_CONNECT_IP=`less $LOGFILE|awk '{print $5}'|cut -f1 -d ':'|sort|uniq -d |tee > $LOGFILE_IP`
+if [ -f $DROP_IP_LOG ];then
+for i in `less $DROP_IP_LOG`;do
+iptables -A INPUT -p ALL -s $i -j DROP
+done
+fi
+for i in `less $LOGFILE_IP`;do
+REPEAT_CONNECT_NUM=`grep $i $LOGFILE|wc -l`
+## count repeat connections ,if the accout is large than default number,then drop packages
+if [ $REPEAT_CONNECT_NUM -gt $MAX_PER_IP_SYN_RECV ];then
+echo "$i####$REPEAT_CONNECT_NUM" >> $DROP_IP_LOG 
+iptables -A INPUT -p ALL -s $i -j DROP
+fi
+done
+ALL_CONNECT=`uniq -u $LOGFILE|wc -l`
+#echo $ALL_CONNECT
+## count repeat connections ,if the accout is large than default number,then drop packages
+if [ $ALL_CONNECT -gt $MAX_TOTAL_SYN_RECV ];then
+#echo $ALL_CONNECT
+exit
+fi
+
