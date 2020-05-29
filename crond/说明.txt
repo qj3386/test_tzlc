@@ -43,6 +43,22 @@ JAV名优资源站：http://mygzycj.com/api.php
 AVZY6888.COM
 http://www.1769bt.com/
 
+影评
+https://www.filmcritics.org.hk/index.php
+
+https://www.hk01.com/
+
+
+VPN
+https://www.expressvpn.com/
+https://nordvpn.com/
+https://www.pandufm.xyz/
+https://www.vyprvpn.com/
+https://www.purevpn.com/
+
+
+
+
 DELETE FROM fl_user WHERE mobile = '13008562851'
 DELETE FROM fl_user WHERE mobile = '15059760691'
 select * from fl_user where mobile = '13008562851'
