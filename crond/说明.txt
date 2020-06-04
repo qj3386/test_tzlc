@@ -49,6 +49,16 @@ https://www.filmcritics.org.hk/index.php
 https://www.hk01.com/
 
 
+
+https://kknews.cc
+
+香港网站<html lang="zh-HK">
+
+台湾网站<html lang="zh-TW">
+<html lang="zh-Hant">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Content-language" content="zh-tw">
+
 VPN
 https://www.expressvpn.com/
 https://nordvpn.com/
