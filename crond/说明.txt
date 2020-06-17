@@ -1,6 +1,7 @@
 
 
 
+
 乌云资源网
 https://www.wuyunzy.cn/
 
@@ -39,6 +40,9 @@ JAV名优资源站：http://mygzycj.com/api.php
 利来资源站：http://llzxcj.com/inc/ck.php
 博天堂资源站：http://bttcj.com/inc/sapi.php
 环亚资源站：http://wmcj8.com/inc/sapi.php
+
+https://xsshs.cn/
+abak2013qq
 
 AVZY6888.COM
 http://www.1769bt.com/
@@ -119,21 +123,51 @@ htop
 
 
 
-服务器/域名
-短信宝
 
 
-短信宝
-http://www.smsbao.com/
 
-阿里云
-https://market.aliyun.com/
+mysql自增ID起始值修改
+alter table fl_user AUTO_INCREMENT=100000;
 
-www.godaddy.com
-https://www.dnspod.cn/
-https://www.sslforfree.com/
-https://www.iconfont.cn/
-https://bitbucket.org/
-http://www.divcss5.com/peise/
-https://www.google.com/intl/zh-CN/analytics/
+
+数据库
+truncate table fl_user;
+alter table fl_user AUTO_INCREMENT=110000;
+truncate table fl_user_log;
+truncate table fl_user_message;
+alter table fl_user_message AUTO_INCREMENT=110000;
+truncate table fl_user_money;
+alter table fl_user_money AUTO_INCREMENT=110000;
+truncate table fl_user_point;
+truncate table fl_user_project;
+alter table fl_user_project AUTO_INCREMENT=110000;
+truncate table fl_user_project_income;
+alter table fl_user_project_income AUTO_INCREMENT=110000;
+truncate table fl_user_recharge;
+alter table fl_user_recharge_income AUTO_INCREMENT=110000;
+truncate table fl_user_withdraw;
+alter table fl_user_withdraw AUTO_INCREMENT=110000;
+truncate table fl_verify_code;
+truncate table fl_sms_log;
+truncate table fl_feedback;
+truncate table fl_admin_log;
+
+UPDATE fl_sysconfig SET value = 0 WHERE varname = 'CMS_CUMULATIVE_RECHARGE';
+UPDATE fl_sysconfig SET value = 0 WHERE varname = 'CMS_CUMULATIVE_WITHDRAWAL';
+
+CentOS下防御或减轻DDoS攻击方法
+https://www.cnblogs.com/EasonJim/p/8325661.html
+https://blog.csdn.net/sunguoqiang1213/article/details/78349690
+
+Centos7防火墙关闭和启用iptables操作
+https://www.cnblogs.com/wntd/p/11668287.html
+
+ModSecurity
+http://www.modsecurity.cn/practice/post/11.html
+
+
+
+
+
+
 
