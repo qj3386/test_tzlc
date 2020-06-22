@@ -104,6 +104,22 @@ https://nordvpn.com/
 https://www.pandufm.xyz/
 https://www.vyprvpn.com/
 https://www.purevpn.com/
+https://surfshark.com/zh/
+https://privatevpn.com/
+https://www.astrill.com/
+
+
+VPS
+https://www.iozoom.com/ 支持：Windows、支付宝，Win首选
+https://www.hostwinds.com/ 支持：Windows、支付宝，Linux首选
+https://www.vultr.com/ 支持：Windows、支付宝
+https://www.cloudways.com/en/
+https://www.linode.com/
+https://www.a2hosting.com/
+https://www.digitalocean.com/ 企业级解决方案
+https://cn.bluehost.com/
+https://www.liquidweb.com/
+
 
 
 
